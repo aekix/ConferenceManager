@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    </head>
+    <body>
+    <script>
+        $(document).ready( function () {
+            $('#content').DataTable();
+        } );
+    </script>
+    {% set i = 0 %}
+    <ul>
+        <li><a href="{{ path('home') }}">Home</a></li>
+        <li><a href="{{ path('createConference') }}">Creer Conférence</a></li>
+        <li><a href="{{ path('conferencesVoted', {'id':app.user.id}) }}">Conférences Votées</a></li>
+        <li><a href="{{ path('conferencesNotVoted', {'id':app.user.id}) }}">Conférences Non Votées</a></li>
+        {% if is_granted('ROLE_ADMIN') == true %}
+            <li><a href="{{ path('top10') }}">Top 10 des conférences</a></li>
+            <li><a href="{{ path('gererConferences') }}">Gerer les conférences</a></li>
+            <li><a href="{{ path('gererUsers') }}">Gerer les utilisateurs</a></li>
+
+        {% endif %}
+        <li><a href="{{ path('logout') }}">Deconnexion</a></li>
+    </ul>
+    <table style="border-spacing: 20px; text-align: center" id="content">
+        <thead>
+        <tr>
+            <th>
+                Nom
+            </th>
+            <th>
+                Prenom
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {%  for user in users %}
+            <tr>
+                <td>
+                    [{{ user.firstname }}]
+                </td>
+                <td>
+                    {{ user.lastname }}
+                </td>
+                <td>
+                    {{ user.email }}
+                </td>
+                <td>
+                    <a href="{{ path('editUser', {'id':user.id}) }}">Editer</a>
+                    <a href="{{ path('removeUser', {'id':user.id}) }}">Supprimer</a>
+                </td>
+
+            </tr>
+
+            {% set i = i + 1 %}
+        {%  endfor %}
+
+        </tbody>
+    </table>
+    </body>
+    </html>
+{% endblock %}
