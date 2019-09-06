@@ -31,7 +31,7 @@
 </nav>
 {{ form_start(forms) }}
 
-<table style="border-spacing: 20px" id="content">
+<table style="border-spacing: 20px; text-align: center" id="content">
     <thead>
     <tr>
         <th>
@@ -39,6 +39,9 @@
         </th>
         <th>
             Description
+        </th>
+        <th>
+            Nombre de vote
         </th>
         <th>
             Note
@@ -55,6 +58,9 @@
             </td>
             <td>
                 {{ conference.description }}
+            </td>
+            <td>
+                {{ conference.votes|length }}
             </td>
             <td>
                 {{ form_row(forms.votes[i].note) }}

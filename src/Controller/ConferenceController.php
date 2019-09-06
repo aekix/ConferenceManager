@@ -181,7 +181,7 @@ class ConferenceController extends AbstractController
             $entityManager->persist($conf);
             $entityManager->flush();
             $this->sendMail($userRepository);
-            $this->redirectToRoute('gererConferences');
+            return $this->redirectToRoute('createConference');
         }
         return $this->render('conference/createConference.html.twig', ['form' => $form->createView()]);
     }
@@ -211,7 +211,7 @@ class ConferenceController extends AbstractController
             $entityManager->flush();
         }
         $repository = $entityManager->getRepository(Conference::class)->findAll();
-        return $this->render('admin/editConference.html.twig', [
+        return $this->render('admin/edit.html.twig', [
             'form' => $form->createView(),
             'conferences' => $repository,
         ]);
@@ -246,7 +246,9 @@ class ConferenceController extends AbstractController
         foreach ($votes as $vote) {
             $sum += $vote->getNote();
         }
-        $sum /= count($votes);
+        if (count($votes) != 0) {
+            $sum /= count($votes);
+        }
         return $sum;
     }
 

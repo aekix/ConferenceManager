@@ -41,6 +41,9 @@
             <th>
                 Note
             </th>
+            <th>
+                Nombre de vote
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -59,6 +62,9 @@
                 </td>
                 <td>
                     {{ notes[i] }}
+                </td>
+                <td>
+                    {{ conference.votes|length }}
                 </td>
 
             </tr>
