@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    </head>
+    <body>
+    <script>
+    $(document).ready( function () {
+    $('#content').DataTable();
+    } );
+    </script>
+    {% set i = 0 %}
+    <table style="border-spacing: 20px" id="content">
+        <thead>
+        <tr>
+            <th>
+                Titre
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Note
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {%  for conference in conferences %}
+            <tr>
+                <td>
+                    [{{ conference.title }}]
+                </td>
+                <td>
+                    {{ conference.description }}
+                </td>
+                {{ form_start(forms) }}
+                <td>
+                    {{ form_row(forms.votes[i].note) }}
+                </td>
+
+            </tr>
+
+            {% set i = i + 1 %}
+
+        {%  endfor %}
+
+        </tbody>
+    </table>
+    {{ form_row(forms.voter) }}
+    {{ form_end(forms) }}
+    </body>
+    </html>
+{% endblock %}
+
