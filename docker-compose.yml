@@ -15,7 +15,10 @@ services:
       WEB_DOCUMENT_INDEX: index.php
       PHP_DATE_TIMEZONE: "Europe/Paris"
       PHP_DISPLAY_ERRORS: 1
-
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - 8025:8025
   database:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password

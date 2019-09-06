@@ -11,8 +11,11 @@ use App\Form\TaskType;
 use App\Form\ValidationType;
 use App\Form\VoteConferenceType;
 use App\Repository\ConferenceRepository;
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -167,7 +170,7 @@ class ConferenceController extends AbstractController
     /**
      * @Route("/createConference", name="createConference")
      */
-    public function createConference(Request $request)
+    public function createConference(Request $request, UserRepository $userRepository)
     {
         $conf = new Conference();
         $conf->setUser($this->getUser());
@@ -177,6 +180,7 @@ class ConferenceController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($conf);
             $entityManager->flush();
+            $this->sendMail($userRepository);
             $this->redirectToRoute('gererConferences');
         }
         return $this->render('conference/createConference.html.twig', ['form' => $form->createView()]);
@@ -235,7 +239,8 @@ class ConferenceController extends AbstractController
      * @param Conference|null $conference
      * @return float
      */
-    public function getAverage(?Conference $conference): float {
+    public function getAverage(?Conference $conference): float
+    {
         $votes = $conference->getVotes();
         $sum = 0;
         foreach ($votes as $vote) {
@@ -244,6 +249,7 @@ class ConferenceController extends AbstractController
         $sum /= count($votes);
         return $sum;
     }
+
     /**
      * @Route("/conferences/top10", name="top10")
      */
@@ -251,13 +257,30 @@ class ConferenceController extends AbstractController
     {
         $notes = array();
         $conferences = $conferenceRepository->findAll();
-        foreach ($conferences as $conference){
+        foreach ($conferences as $conference) {
             $notes[] = $this->getAverage($conference);
         }
-        array_multisort($notes, SORT_DESC,SORT_NUMERIC,$conferences, SORT_DESC);
+        array_multisort($notes, SORT_DESC, SORT_NUMERIC, $conferences, SORT_DESC);
         return $this->render('admin/top10.html.twig', [
             'conferences' => $conferences,
             'notes' => $notes,
         ]);
+    }
+
+    public function sendMail(UserRepository $userRepository)
+    {
+        $transport = new Swift_SmtpTransport('mailhog', 1025);
+        $mailer = new Swift_Mailer($transport);
+        $users = $userRepository->findAll();
+        $message = new  \Swift_Message('Une nouvelle conférence a été soumise !');
+        $message->setFrom('noreply@aeki.com')
+            ->setBody(
+            $this->renderView('email/mail.html.twig'),
+            'text/html'
+        );
+        foreach ($users as $user) {
+            $message->setTo($user->getEmail());
+            $mailer->send($message);
+        }
     }
 }
